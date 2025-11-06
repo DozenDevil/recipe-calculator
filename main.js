@@ -1,3 +1,14 @@
+// Изменение названия рецепта
+
+document.getElementById('recipeTitle').addEventListener('click', e => {
+    const title = prompt("Введите название рецепта");
+    if (title) {
+        e.target.textContent = title;
+    }
+})
+
+// Добавление ингредиента
+
 let recipe = []
 document.getElementById('addItem').addEventListener('click', function() {
     const itemName = document.getElementById('itemName');
@@ -34,6 +45,22 @@ document.getElementById('addItem').addEventListener('click', function() {
 
     itemName.value = '';
     itemAmount.value = '';
+})
+
+// Удаление ингредиента
+
+document.getElementById('recipe1').addEventListener('click', e => {
+    if (!e.target.dataset.ingredientName) {
+        return;
+    }
+
+    for (let i = 0; i < recipe.length; i++) {
+        if (recipe[i].name == e.target.dataset.ingredientName) {
+            recipe.splice(i, 1);
+        }
+    }
+    
+    e.target.closest('.d-flex').remove();
 })
 
 // Размер шрифта
