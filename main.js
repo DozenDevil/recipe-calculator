@@ -1,16 +1,36 @@
-// Изменение названия рецепта
+// Размер шрифта
 
-document.getElementById('recipeTitle').addEventListener('click', e => {
-    const title = prompt("Введите название рецепта");
-    if (title) {
-        e.target.textContent = title;
+if (!localStorage.getItem('userFontSize')) {
+    localStorage.setItem('userFontSize', 12);
+}
+
+let userFontSize = parseInt(localStorage.getItem('userFontSize'));
+setFontSize(userFontSize);
+
+function setFontSize(size) {
+    document.body.style.fontSize = `${size}px`;
+    localStorage.setItem('userFontSize', size);
+}
+
+document.getElementById('fsize').addEventListener('click', e => {
+    let action = e.target.dataset.action;
+    if (action === "decrease" && userFontSize > 8) {
+        userFontSize--;
     }
-})
+    if (action === "reset") {
+        userFontSize = 12;
+    }
+    if (action === "increase" && userFontSize < 22) {
+        userFontSize++;
+    }
+
+    setFontSize(userFontSize);
+});
 
 // Добавление ингредиента
 
 let recipe = []
-document.getElementById('addItem').addEventListener('click', function() {
+document.getElementById('addItem').addEventListener('click', function () {
     const itemName = document.getElementById('itemName');
     const itemAmount = document.getElementById('itemAmount');
     const itemMeasure = document.getElementById('itemMeasure');
@@ -41,15 +61,15 @@ document.getElementById('addItem').addEventListener('click', function() {
         </div>
     `
 
-    document.getElementById('recipe1').append(itemContainer);
+    document.getElementById('recipe').append(itemContainer);
 
     itemName.value = '';
     itemAmount.value = '';
-})
+});
 
 // Удаление ингредиента
 
-document.getElementById('recipe1').addEventListener('click', e => {
+document.getElementById('recipe').addEventListener('click', e => {
     if (!e.target.dataset.ingredientName) {
         return;
     }
@@ -59,35 +79,29 @@ document.getElementById('recipe1').addEventListener('click', e => {
             recipe.splice(i, 1);
         }
     }
-    
+
     e.target.closest('.d-flex').remove();
-})
+});
 
-// Размер шрифта
+// Изменение названия рецепта
 
-if (!localStorage.getItem('userFontSize')) {
-    localStorage.setItem('userFontSize', 12);
-}
-
-let userFontSize = parseInt(localStorage.getItem('userFontSize'));
-setFontSize(userFontSize);
-
-function setFontSize(size) {
-    document.body.style.fontSize = `${size}px`;
-    localStorage.setItem('userFontSize', size);
-}
-
-document.getElementById('fsize').addEventListener('click', e => {
-    let action = e.target.dataset.action;
-    if (action === "decrease" && userFontSize > 8) {
-        userFontSize--;
+document.getElementById('recipeTitle').addEventListener('click', e => {
+    const title = prompt("Введите название рецепта");
+    if (title) {
+        e.target.textContent = title;
     }
-    if (action === "reset") {
-        userFontSize = 12;
-    }
-    if (action === "increase" && userFontSize < 22) {
-        userFontSize++;
-    }
+});
 
-    setFontSize(userFontSize);
+// Копирование рецепта
+
+document.getElementById('copyRecipe').addEventListener('click', function () {
+    let textToCopy = document.getElementById('scaledRecipe').innerText;
+
+    navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+            alert("Рецепт успешно скопирован!");
+        })
+        .catch(err => {
+            console.error('Не удалось скопировать рецепт:', err);
+        });
 });
