@@ -1,3 +1,37 @@
+// Название рецепта по-умолчанию
+
+const defaultTitle = "Нажмите, чтобы ввести название рецепта";
+
+// Закреплённый рецепт в локальном хранилище
+
+if (!localStorage.getItem('pinnedRecipe')) {
+    localStorage.setItem('pinnedRecipe', JSON.stringify([]));
+}
+
+if (!localStorage.getItem('pinnedRecipeTitle')) {
+    localStorage.setItem('pinnedRecipeTitle', "");
+}
+
+// Массивы рецептов
+
+let workingRecipe = [];
+let pinnedRecipe = JSON.parse(localStorage.getItem('pinnedRecipe')) || [];
+
+// Скрываемые и активируемые элементы
+
+const workingRecipeView = document.getElementById('workingRecipeView');
+const pinnedRecipeView = document.getElementById('pinnedRecipeView');
+const showRecipeButton = document.getElementById('showRecipe');
+
+workingRecipeView.hidden = true;
+
+if (!pinnedRecipe.length) {
+    pinnedRecipeView.hidden = true;
+} else {
+    appendRecipe(pinnedRecipe, 'pinnedRecipeBody');
+    document.getElementById('pinnedRecipeTitle').textContent = localStorage.getItem('pinnedRecipeTitle');
+}
+
 // Размер шрифта
 
 if (!localStorage.getItem('userFontSize')) {
@@ -29,7 +63,6 @@ document.getElementById('fsize').addEventListener('click', e => {
 
 // Добавление ингредиента
 
-let initialRecipe = []
 document.getElementById('addItem').addEventListener('click', function () {
     const itemName = document.getElementById('itemName');
     const itemAmount = document.getElementById('itemAmount');
@@ -40,7 +73,7 @@ document.getElementById('addItem').addEventListener('click', function () {
         return false;
     }
 
-    initialRecipe.push({
+    workingRecipe.push({
         "name": itemName.value,
         "amount": +itemAmount.value,
         "measure": itemMeasure.value
@@ -61,26 +94,40 @@ document.getElementById('addItem').addEventListener('click', function () {
         </div>
     `
 
-    document.getElementById('initialRecipe').append(itemContainer);
+    document.getElementById('workingRecipe').append(itemContainer);
+
+    if (showRecipeButton.disabled == true) {
+        showRecipeButton.disabled = false;
+    }
 
     itemName.value = '';
     itemAmount.value = '';
 });
 
+// Отображение рецепта
+
+showRecipeButton.addEventListener('click', function () {
+    appendRecipe(workingRecipe, 'recipeBody');
+});
+
 // Удаление ингредиента
 
-document.getElementById('initialRecipe').addEventListener('click', e => {
+document.getElementById('workingRecipe').addEventListener('click', e => {
     if (!e.target.dataset.ingredientName) {
         return false;
     }
 
-    for (let i = 0; i < recipe.length; i++) {
-        if (recipe[i].name === e.target.dataset.ingredientName) {
-            recipe.splice(i, 1);
+    for (let i = 0; i < workingRecipe.length; i++) {
+        if (workingRecipe[i].name === e.target.dataset.ingredientName) {
+            workingRecipe.splice(i, 1);
         }
     }
 
     e.target.closest('.d-flex').remove();
+
+    if (!workingRecipe.length) {
+        showRecipeButton.disabled = true;
+    }
 });
 
 // Вычисление пропорций
@@ -97,7 +144,7 @@ document.getElementById('scaleRecipe').addEventListener('click', function () {
     let scaledRecipe = [];
 
     if (scalingDirection === "up") {
-        for (ingredient of initialRecipe) {
+        for (ingredient of workingRecipe) {
             scaledRecipe.push({
                 "name": ingredient.name,
                 "amount": ingredient.amount * scalingCoefficient,
@@ -107,7 +154,7 @@ document.getElementById('scaleRecipe').addEventListener('click', function () {
     }
 
     if (scalingDirection === "down") {
-        for (ingredient of initialRecipe) {
+        for (ingredient of workingRecipe) {
             scaledRecipe.push({
                 "name": ingredient.name,
                 "amount": Math.round(ingredient.amount / scalingCoefficient * 100) / 100,
@@ -116,11 +163,13 @@ document.getElementById('scaleRecipe').addEventListener('click', function () {
         }
     }
 
-    appendFinalRecipe(scaledRecipe);
+    appendRecipe(scaledRecipe, 'recipeBody');
 });
 
-function appendFinalRecipe(recipeArray) {
-    const recipeBody = document.getElementById('recipeBody');
+// Отобразить рецепт в выбранном месте
+
+function appendRecipe(recipeArray, targetId) {
+    const recipeBody = document.getElementById(targetId);
     recipeBody.innerHTML = '';
 
     for (ingredient of recipeArray) {
@@ -138,6 +187,11 @@ function appendFinalRecipe(recipeArray) {
         `
 
         recipeBody.append(itemContainer);
+    }
+
+    const recipeContainer = recipeBody.closest('fieldset');
+    if (recipeContainer.hidden === true) {
+        recipeContainer.hidden = false;
     }
 }
 
@@ -173,11 +227,7 @@ document.getElementById('recipeTitle').addEventListener('click', e => {
 // Копирование рецепта
 
 document.getElementById('copyRecipe').addEventListener('click', function () {
-    if (!document.getElementById('recipeBody').innerHTML) {
-        appendFinalRecipe(initialRecipe);
-    }
-
-    let textToCopy = document.getElementById('finalRecipe').innerText;
+    let textToCopy = document.getElementById('pinnedRecipe').innerText;
 
     navigator.clipboard.writeText(textToCopy)
         .then(() => {
@@ -186,4 +236,34 @@ document.getElementById('copyRecipe').addEventListener('click', function () {
         .catch(err => {
             console.error('Не удалось скопировать рецепт:', err);
         });
+});
+
+// Закрепление рецепта
+
+document.getElementById('pinRecipe').addEventListener('click', function () {
+    pinnedRecipe = workingRecipe;
+    localStorage.setItem('pinnedRecipe', JSON.stringify(pinnedRecipe));
+
+    const workingTitle = document.getElementById('recipeTitle');
+
+    if (workingTitle.textContent.trim() != defaultTitle) {
+        localStorage.setItem('pinnedRecipeTitle', workingTitle.textContent.trim());
+        document.getElementById('pinnedRecipeTitle').textContent = workingTitle.textContent;
+        workingTitle.textContent = defaultTitle;
+    }
+
+    appendRecipe(pinnedRecipe, 'pinnedRecipeBody');
+
+    workingRecipeView.hidden = true;
+    pinnedRecipeView.hidden = false;
+});
+
+// Удаление рецепта
+
+document.getElementById('removeRecipe').addEventListener('click', function () {
+    pinnedRecipe = [];
+    localStorage.setItem('pinnedRecipe', JSON.stringify([]));
+    localStorage.setItem('pinnedRecipeTitle', "");
+
+    pinnedRecipeView.hidden = true;
 });

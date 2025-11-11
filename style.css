@@ -61,7 +61,9 @@ select {
 }
 
 #fsize button,
-#copyRecipe {
+#copyRecipe,
+#pinRecipe,
+#removeRecipe {
     min-width: 35px;
     height: 35px;
     display: flex;
@@ -73,16 +75,27 @@ select {
     width: 130px;
 }
 
-#itemCount,
-#itemMeasure,
-#scalingCoefficient {
+#itemAmount {
+    width: 70px;
+}
+
+#itemMeasure {
     width: 60px;
+}
+
+#scalingCoefficient {
+    width: 30px;
 }
 
 .primaryButton {
     background-color: #6fb9fe;
     color: white;
     margin: 10px 0;
+}
+
+.primaryButton:disabled {
+    background-color: #b8d9ff;
+    cursor: not-allowed;
 }
 
 .dangerButton {
