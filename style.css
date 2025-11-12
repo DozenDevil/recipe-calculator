@@ -5,11 +5,28 @@
     user-select: none;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 body {
+    --bgColor: white;
+    --textColor: #222;
+    --legendColor: #555;
+
+    background-color: var(--bgColor);
+    color: var(--textColor);
+
     margin: 0;
     padding: 20px;
     font-family: sans-serif;
     font-size: 12px;
+}
+
+body.dark {
+    --bgColor: #222;
+    --textColor: white;
+    --legendColor: #ddd;
 }
 
 .d-flex {
@@ -30,7 +47,7 @@ body {
 }
 
 legend {
-    color: #555;
+    color: var(--legendColor);
 }
 
 summary,
@@ -60,6 +77,7 @@ select {
     background-color: #eee;
 }
 
+#theme button,
 #fsize button,
 #copyRecipe,
 #pinRecipe,
@@ -103,4 +121,9 @@ select {
     background-color: #f99;
     font-weight: bold;
     font-size: 12px;
+}
+
+.darkButton {
+    background-color: #222;
+    color: white;
 }

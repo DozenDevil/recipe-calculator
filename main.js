@@ -19,9 +19,13 @@ let pinnedRecipe = JSON.parse(localStorage.getItem('pinnedRecipe')) || [];
 
 // Скрываемые и активируемые элементы
 
+const lightThemeButton = document.querySelector('[data-theme="light"]');
+const darkThemeButton = document.querySelector('[data-theme="dark"]');
 const workingRecipeView = document.getElementById('workingRecipeView');
 const pinnedRecipeView = document.getElementById('pinnedRecipeView');
 const showRecipeButton = document.getElementById('showRecipe');
+
+darkThemeButton.hidden = true;
 
 workingRecipeView.hidden = true;
 
@@ -31,6 +35,36 @@ if (!pinnedRecipe.length) {
     appendRecipe(pinnedRecipe, 'pinnedRecipeBody');
     document.getElementById('pinnedRecipeTitle').textContent = localStorage.getItem('pinnedRecipeTitle');
 }
+
+// Цветовая тема
+
+if (!localStorage.getItem('colorTheme')) {
+    localStorage.setItem('colorTheme', "light");
+}
+
+let isDark = localStorage.getItem('colorTheme') === "dark";
+
+if (isDark) {
+    document.querySelector('body').classList.add("dark");
+    darkThemeButton.hidden = true;
+    lightThemeButton.hidden = false;
+} else {
+    darkThemeButton.hidden = false;
+    lightThemeButton.hidden = true;
+}
+
+document.getElementById('theme').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-theme]');
+    if (!btn) return;
+
+    document.querySelector('body').classList.toggle("dark");
+
+    lightThemeButton.hidden = btn.dataset.theme === "light";
+    darkThemeButton.hidden = btn.dataset.theme === "dark";
+
+    isDark = localStorage.getItem('colorTheme') === "dark";
+    localStorage.setItem('colorTheme', isDark ? "light" : "dark");
+});
 
 // Размер шрифта
 
@@ -203,8 +237,8 @@ document.getElementById('scalingCoefficient').addEventListener('input', e => {
     const isIndirect = (
         (number % 100 < 10 || number % 100 > 20) &
         (number % 10 == 2 ||
-        number % 10 == 3 ||
-        number % 10 == 4)
+            number % 10 == 3 ||
+            number % 10 == 4)
     );
 
     if (isIndirect) {
