@@ -49,7 +49,7 @@
           Введите название рецепта нажав на заголовок с соответствующим текстом.
         </li>
         <li>
-          Можно сделать скриншот готового результата или скопировть в буфер
+          Можно сделать скриншот готового результата или скопировать в буфер
           обмена.
         </li>
       </ol>
@@ -138,12 +138,14 @@
           type="number"
           placeholder="число"
           min="1"
-          value="1"
+          value="2"
           max="10"
         />
         <p id="pedanticText">раз</p>
       </div>
-      <button class="primaryButton" id="scaleRecipe">Изменить пропорции</button>
+      <button class="primaryButton" id="scaleRecipe" disabled>
+        Изменить пропорции
+      </button>
     </fieldset>
 
     <fieldset id="workingRecipeView">
@@ -177,7 +179,7 @@
         <h3 id="pinnedRecipeTitle"></h3>
         <div id="pinnedRecipeBody"></div>
       </div>
-      <div class="d-flex">
+      <div class="d-flex justify-content">
         <button id="copyRecipe" title="Копировать">
           <!-- Графика иконки копирования -->
           <svg

@@ -24,8 +24,7 @@ const darkThemeButton = document.querySelector('[data-theme="dark"]');
 const workingRecipeView = document.getElementById('workingRecipeView');
 const pinnedRecipeView = document.getElementById('pinnedRecipeView');
 const showRecipeButton = document.getElementById('showRecipe');
-
-darkThemeButton.hidden = true;
+const scaleRecipeButton = document.getElementById('scaleRecipe');
 
 workingRecipeView.hidden = true;
 
@@ -122,7 +121,7 @@ document.getElementById('addItem').addEventListener('click', function () {
 
     let itemContainer = document.createElement('div');
     itemContainer.innerHTML = `
-        <div class="d-flex justify-ingredient">
+        <div class="d-flex justify-content">
             <div>${ingredient}</div>
             <button class="dangerButton" data-ingredient-name="${itemName.value}">&times;</button>
         </div>
@@ -130,8 +129,9 @@ document.getElementById('addItem').addEventListener('click', function () {
 
     document.getElementById('workingRecipe').append(itemContainer);
 
-    if (showRecipeButton.disabled == true) {
+    if (workingRecipe.length) {
         showRecipeButton.disabled = false;
+        scaleRecipeButton.disabled = false;
     }
 
     itemName.value = '';
@@ -161,12 +161,13 @@ document.getElementById('workingRecipe').addEventListener('click', e => {
 
     if (!workingRecipe.length) {
         showRecipeButton.disabled = true;
+        scaleRecipeButton.disabled = true;
     }
 });
 
 // Вычисление пропорций
 
-document.getElementById('scaleRecipe').addEventListener('click', function () {
+scaleRecipeButton.addEventListener('click', function () {
     const scalingDirection = document.getElementById('scalingDirection').value;
     const scalingCoefficient = document.getElementById('scalingCoefficient').value;
 
